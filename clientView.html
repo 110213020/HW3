@@ -1,0 +1,107 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="https://unpkg.com/vue@next"></script>
+</head>
+
+<body >
+<hr />
+
+<div id="main">
+<div id="list" v-if="UI=='main'">
+	<h1>商品清單</h1>
+	<table border=1>
+		<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td><td>-</td></tr>
+		<tr v-for="job in dat">
+			<td>{{job.id}}</td>
+			<td>{{job.jobName}}</td>
+			<td>{{job.jobPrice}}</td>
+			<td>{{job.jobContent}}</td>
+			<td><button @click="delJob(job.id)">加入購物車</button></td>
+		</tr>
+		<button @click="setUI('editForm')">查看購物車</button>		
+	</table>
+</div>
+
+<div v-if="UI=='editForm'">
+	<h1>我的購物車</h1>
+	<button @click="setUI('main')">返回商品清單</button>
+	<table border=1>
+	<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td><td>-</td></tr>
+	<tr v-for="job in dat">
+		<td>{{job.a_id}}</td>
+		<td>{{job.a_jobName}}</td>
+		<td>{{job.a_jobPrice}}</td>
+		<td>{{job.jobContent}}</td>
+		<td><button @click="delJob(job.id)">刪</button></td>
+	</tr>
+</table>
+</div>
+</div>
+
+<script>
+const todoApp= Vue.createApp({
+	data() {
+		return {
+			UI: 'main',
+			dat: [],
+			newJob: {
+				id: -1,
+				jobName: '',
+				jobUrgent: '',
+				jobContent: ''
+			}
+		}
+	},
+	methods: {
+		loadList: function () {
+			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
+			fetch('todoControl.php?act=listJob')
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(myJson) {
+				//we are inside the callback function, now `this` means the function, not vm6
+				//we will use `that` to access vm6
+				that.dat = myJson;
+				//vm6.dat = myJson;
+			});
+		},
+		delJob: function (id) {
+			const that=this;
+			let url="todoControl.php?act=delJob&id="+id;
+			fetch(url,{
+				method: 'POST'
+			})
+			.then(function(res){return res.text(); }) //取得傳回值，轉為文字
+			.then(function(data){
+				console.log(data);
+				that.loadList();
+			})
+		},
+		addJob: function () {
+			const that=this;
+			let mydat = new FormData();
+			mydat.append( "dat", JSON.stringify(this.newJob) );
+
+			let url="todoControl.php?act=addJob";
+			fetch(url,{
+				method: 'POST',
+				body: mydat // 將表單物件放入fetch的body屬性
+			})
+			.then(function(res){return res.text(); }) //取得傳回值，轉為文字
+			.then(function(data){ 
+				console.log(data);
+				that.setUI('main');
+				that.loadList();
+			})
+		},
+		setUI: function(page) {
+			this.UI=page;
+		}
+	},
+	created() {
+		this.loadList();
+	}
+}).mount("#main");
+</script>
+</body></html>

@@ -1,46 +1,45 @@
 <html><head>
+</head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<script type="text/javascript" src="https://unpkg.com/vue@next"></script>
 	</head>
 	
-	<body >
-	<hr />
-	
+	<body>
+	<hr/>
 	<div id="main">
 	<div id="list" v-if="UI=='main'">
-		<h1>商品清單</h1>
+		<h1>This is the main page</h1>
 		<table border=1>
-			<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>剩餘數量</td><td>商品說明</td><td>-</td></tr>
+			<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td><td>-</td></tr>
 			<tr v-for="job in dat">
 				<td>{{job.id}}</td>
 				<td>{{job.jobName}}</td>
 				<td>{{job.jobPrice}}</td>
-				<td>{{job.jobRemain}}</td>
 				<td>{{job.jobContent}}</td>
-				<td><button @click="delJob(job.id)">加入購物車</button></td>
-			</tr>
-			<button @click="setUI('editForm')">查看購物車</button>
-		</table>
-	</div>
-	
-	<div v-if="UI=='editForm'">
-		<h1>我的購物車</h1>
-		<button @click="setUI('main')">返回商品清單</button>
-		<table border=1>
-			<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>數量</td><td>總價</td><td>-</td></tr>
-			<tr v-for="job in dat">
-				<td>{{job.a_id}}</td>
-				<td>{{job.a_jobName}}</td>
-				<td>{{job.a_jobPrice}}</td>
-				<td>{{job.a_jobRemain}}</td>
-				<td>{{job.a_jobContent}}</td>
-				<td><button @click="delJob(job.id)">刪</button></td>
+				<td><button @click="delJob(job.id)">刪</button><button @click="setEditUI(job)">改</button></td>
 			</tr>
 		</table>
-	</div>
-	</div>
-	
-	<script>
+</div>
+<div v-if="UI=='editForm'">
+	商品名稱: <input type="text"  v-model="newJob.name"/> <br/>
+
+	單價: <input type="text" v-model="newJob.price"> <br>
+
+	工作說明: <textarea v-model="newJob.content"></textarea><br>
+
+	<input type='button' @click="addJob()" value="save">
+</div>
+<div v-if="UI=='editForm2'">
+	商品名稱: <input type="text"  v-model="newJob.name"/> <br/>
+
+	單價: <input type="text" v-model="newJob.price"> <br>
+
+	工作說明: <textarea v-model="newJob.content"></textarea><br>
+
+	<input type='button' @click="updateJob()" value="save">
+</div>
+</div>
+<script>
 	const todoApp= Vue.createApp({
 		data() {
 			return {
