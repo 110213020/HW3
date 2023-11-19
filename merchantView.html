@@ -9,13 +9,14 @@
 	<div id="main">
 	<div id="list" v-if="UI=='main'">
 		<h1>This is the main page</h1>
+		<button @click="setAddUI()">Load Add Form</button>
 		<table border=1>
 			<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td><td>-</td></tr>
 			<tr v-for="job in dat">
 				<td>{{job.id}}</td>
-				<td>{{job.jobName}}</td>
-				<td>{{job.jobPrice}}</td>
-				<td>{{job.jobContent}}</td>
+				<td>{{job.name}}</td>
+				<td>{{job.price}}</td>
+				<td>{{job.content}}</td>
 				<td><button @click="delJob(job.id)">刪</button><button @click="setEditUI(job)">改</button></td>
 			</tr>
 		</table>
@@ -47,16 +48,16 @@
 				dat: [],
 				newJob: {
 					id: -1,
-					jobName: '',
-					jobUrgent: '',
-					jobContent: ''
+					name: '',
+					price: '',
+					content: ''
 				}
 			}
 		},
 		methods: {
 			loadList: function () {
 				const that=this; //this  ==> stands for vm6. let's save `this` to `that`
-				fetch('todoControl.php?act=listJob')
+				fetch('merchantControl.php?act=listJob')
 				.then(function(response) {
 					return response.json();
 				})
@@ -69,7 +70,7 @@
 			},
 			delJob: function (id) {
 				const that=this;
-				let url="todoControl.php?act=delJob&id="+id;
+				let url="merchantControl.php?act=delJob&id="+id;
 				fetch(url,{
 					method: 'POST'
 				})
@@ -84,7 +85,7 @@
 				let mydat = new FormData();
 				mydat.append( "dat", JSON.stringify(this.newJob) );
 	
-				let url="todoControl.php?act=addJob";
+				let url="merchantControl.php?act=addJob";
 				fetch(url,{
 					method: 'POST',
 					body: mydat // 將表單物件放入fetch的body屬性
@@ -96,6 +97,19 @@
 					that.loadList();
 				})
 			},
+			setEditUI: function(job) {
+			this.newJob=job;
+			this.setUI('editForm2');
+		    },
+			setAddUI: function() {
+			this.newJob={
+				id: -1,
+				name: '',
+				price: '',
+				content: ''
+			};
+			this.setUI('editForm');
+		    },
 			setUI: function(page) {
 				this.UI=page;
 			}
