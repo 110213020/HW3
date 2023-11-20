@@ -17,7 +17,7 @@
 			<td>{{job.content}}</td>
 			<td><button @click="delJob(job.id)">加入購物車</button></td>
 		</tr>
-		<button @click="setUI('editForm')">查看購物車</button>
+		<button @click="setUI1('editForm')">查看購物車</button>
 	</table>
 </div>
 
@@ -70,7 +70,7 @@ const todoApp= Vue.createApp({
 				//vm6.dat = myJson;
 			});
 		},
-		loadList: function () {
+		loadshoppingList: function () {
 			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
 			fetch('clientControl.php?act=listshopping')
 			.then(function(response) {
@@ -114,6 +114,11 @@ const todoApp= Vue.createApp({
 		},
 		setUI: function(page) {
 			this.UI=page;
+			this.loadList();
+		},
+		setUI1: function(page) {
+			this.UI=page;
+			this.loadshoppingList();
 		}
 	},
 	created() {
