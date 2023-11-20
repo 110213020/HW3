@@ -16,15 +16,6 @@ case "addJob":
 	//should verify first
 	addJob($job->name,$job->price,$job->content,$job->number);
 	return;
-
-case "updateJob":
-
-	$id=(int)$_REQUEST['id'];
-	$jsonStr = $_POST['dat'];
-	$job = json_decode($jsonStr);
-	updateJob($id,$job->name,$job->price,$job->content);
-	return;
-
 case "delJob":
 	$id=(int)$_REQUEST['id']; //$_GET, $_REQUEST
 	//verify
@@ -35,6 +26,15 @@ case "listshopping":
 	$jobs=getJobList1();
 	echo json_encode($jobs);
 	return;
+/*
+case "updateJob":
+
+	$id=(int)$_REQUEST['id'];
+	$jsonStr = $_POST['dat'];
+	$job = json_decode($jsonStr);
+	updateJob($id,$job->name,$job->price,$job->content);
+	return;
+*/
 default:
 }
 ?>
