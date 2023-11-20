@@ -33,18 +33,17 @@ function getJobList1()
 	return $rows;
 }
 
-/*
-function addJob($name,$price,$content)
+function addJob($name,$price,$content,$number)
 {
 	global $db;
-
-	$sql = "insert into list (name, price, content) values (?, ?, ?)"; //SQL中的 ? 代表未來要用變數綁定進去的地方
+    $total = $number*$price;
+	$sql = "insert into shopping (name, price, content, number, total) values (?, ?, ?, ?, ?)"; //SQL中的 ? 代表未來要用變數綁定進去的地方
 	$stmt = mysqli_prepare($db, $sql); //prepare sql statement
-	mysqli_stmt_bind_param($stmt, "sis", $name, $price,$content); //bind parameters with variables, with types "sss":string, string ,string
+	mysqli_stmt_bind_param($stmt, "sisii", $name, $price,$content,$number,$total); //bind parameters with variables, with types "sss":string, string ,string
 	mysqli_stmt_execute($stmt);  //執行SQL
 	return True;
 }
-
+/*
 function updateJob($id, $name,$price,$content)
 {
 	global $db;

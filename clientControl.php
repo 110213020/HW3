@@ -14,7 +14,7 @@ case "addJob":
 	$jsonStr = $_POST['dat'];
 	$job = json_decode($jsonStr);
 	//should verify first
-	addJob($job->name,$job->price,$job->content);
+	addJob($job->name,$job->price,$job->content,$job->number);
 	return;
 
 case "updateJob":

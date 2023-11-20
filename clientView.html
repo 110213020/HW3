@@ -15,7 +15,7 @@
 			<td>{{job.name}}</td>
 			<td>{{job.price}}</td>
 			<td>{{job.content}}</td>
-			<td><button @click="delJob(job.id)">加入購物車</button></td>
+			<td><button @click="setQanUI(job)">加入購物車</button></td>
 		</tr>
 		<button @click="setUI1('editForm')">查看購物車</button>
 	</table>
@@ -40,6 +40,17 @@
 	</tr>
 </table>
 </div>
+<div v-if="UI=='editForm2'">
+	商品名稱: {{newJob.name}} <br/>
+
+	單價: {{newJob.price}} <br>
+
+	商品說明: {{newJob.content}}<br>
+	
+	數量: <input type="text" v-model="newJob.number"><br>
+
+	<input type='button' @click="addJob(job)" value="save">
+</div>
 </div>
 
 <script>
@@ -50,9 +61,11 @@ const todoApp= Vue.createApp({
 			dat: [],
 			newJob: {
 				id: -1,
-				jobName: '',
-				jobUrgent: '',
-				jobContent: ''
+				name: '',
+				price: '',
+				content: '',
+				number: 0,
+				total: 0
 			}
 		}
 	},
@@ -111,6 +124,10 @@ const todoApp= Vue.createApp({
 				that.setUI('main');
 				that.loadList();
 			})
+		},
+		setQanUI: function(job) {
+			this.newJob=job;
+			this.setUI('editForm2');
 		},
 		setUI: function(page) {
 			this.UI=page;
