@@ -4,7 +4,6 @@
 </head>
 
 <body >
-<hr />
 
 <div id="main">
 <div id="list" v-if="UI=='main'">
@@ -13,12 +12,12 @@
 		<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td><td>-</td></tr>
 		<tr v-for="job in dat">
 			<td>{{job.id}}</td>
-			<td>{{job.jobName}}</td>
-			<td>{{job.jobPrice}}</td>
-			<td>{{job.jobContent}}</td>
+			<td>{{job.name}}</td>
+			<td>{{job.price}}</td>
+			<td>{{job.content}}</td>
 			<td><button @click="delJob(job.id)">加入購物車</button></td>
 		</tr>
-		<button @click="setUI('editForm')">查看購物車</button>		
+		<button @click="setUI('editForm')">查看購物車</button>
 	</table>
 </div>
 
@@ -26,12 +25,17 @@
 	<h1>我的購物車</h1>
 	<button @click="setUI('main')">返回商品清單</button>
 	<table border=1>
-	<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td><td>-</td></tr>
+	<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td>
+		<td>數量</td><td>總價</td>
+		<td>-</td>
+	</tr>
 	<tr v-for="job in dat">
-		<td>{{job.a_id}}</td>
-		<td>{{job.a_jobName}}</td>
-		<td>{{job.a_jobPrice}}</td>
-		<td>{{job.jobContent}}</td>
+		<td>{{job.id}}</td>
+		<td>{{job.name}}</td>
+		<td>{{job.price}}</td>
+		<td>{{job.content}}</td>
+		<td>{{job.number}}</td>
+		<td>{{job.total}}</td>
 		<td><button @click="delJob(job.id)">刪</button></td>
 	</tr>
 </table>
@@ -55,7 +59,20 @@ const todoApp= Vue.createApp({
 	methods: {
 		loadList: function () {
 			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
-			fetch('todoControl.php?act=listJob')
+			fetch('clientControl.php?act=listJob')
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(myJson) {
+				//we are inside the callback function, now `this` means the function, not vm6
+				//we will use `that` to access vm6
+				that.dat = myJson;
+				//vm6.dat = myJson;
+			});
+		},
+		loadList: function () {
+			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
+			fetch('clientControl.php?act=listshopping')
 			.then(function(response) {
 				return response.json();
 			})
@@ -68,7 +85,7 @@ const todoApp= Vue.createApp({
 		},
 		delJob: function (id) {
 			const that=this;
-			let url="todoControl.php?act=delJob&id="+id;
+			let url="clientControl.php?act=delJob&id="+id;
 			fetch(url,{
 				method: 'POST'
 			})
@@ -83,7 +100,7 @@ const todoApp= Vue.createApp({
 			let mydat = new FormData();
 			mydat.append( "dat", JSON.stringify(this.newJob) );
 
-			let url="todoControl.php?act=addJob";
+			let url="clientControl.php?act=addJob";
 			fetch(url,{
 				method: 'POST',
 				body: mydat // 將表單物件放入fetch的body屬性
@@ -104,4 +121,5 @@ const todoApp= Vue.createApp({
 	}
 }).mount("#main");
 </script>
-</body></html>
+</body>
+</html>
