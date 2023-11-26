@@ -39,6 +39,9 @@
 		<td><button @click="delJob(job.id)">刪</button></td>
 	</tr>
 </table>
+<div>
+	<strong>購物車總價: {{ calculateTotalPrice() }}</strong>
+</div>
 </div>
 <div v-if="UI=='editForm2'">
 	商品名稱: {{newJob.name}} <br/>
@@ -126,6 +129,13 @@ const todoApp= Vue.createApp({
 				//that.loadList();
 			})
 		},
+		calculateTotalPrice: function () {
+        let totalPrice = 0;
+        for (const job of this.dat) {
+            totalPrice += job.total;
+        }
+        return totalPrice;
+    	},
 		setQanUI: function(job) {
 			this.newJob=job;
 			this.setUI('editForm2');
