@@ -33,16 +33,36 @@ function getJobList1()
 	return $rows;
 }
 
-function addJob($name,$price,$content,$number)
+function addJob($name, $price, $content, $number)
 {
-	global $db;
-    $total = $number*$price;
-	$sql = "insert into shopping (name, price, content, number, total) values (?, ?, ?, ?, ?)"; //SQL中的 ? 代表未來要用變數綁定進去的地方
-	$stmt = mysqli_prepare($db, $sql); //prepare sql statement
-	mysqli_stmt_bind_param($stmt, "sisii", $name, $price,$content,$number,$total); //bind parameters with variables, with types "sss":string, string ,string
-	mysqli_stmt_execute($stmt);  //執行SQL
-	return True;
+    global $db;
+    $sql = "select `number` from shopping where name=?;";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $name);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) == 0) {
+        $total = $number * $price;
+        $sql = "insert into shopping (name, price, content, number, total) values (?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "sisii", $name, $price, $content, $number, $total);
+        mysqli_stmt_execute($stmt);
+        return true;
+    } else {
+        $row = mysqli_fetch_assoc($result);
+        $newNumber = $row['number'] + $number;
+		$total = $newNumber * $price;
+        $sql = "update `shopping` set number=?, total=? where name=?";
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "iis", $newNumber, $total, $name);
+        mysqli_stmt_execute($stmt);
+        return true;
+    }
+
+    return false;
 }
+
 function delJob($id)
 {
 	global $db;
