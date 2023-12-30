@@ -20,8 +20,8 @@
 	密碼: <input type="text" v-model="pwd"> <br>
 
 	角色: 
-	<select name="role" v-model="role">
-	<option value="client">顧客</option>
+	<select name="role" v-model="role" required>
+	<option value="client" selected>顧客</option>
 	<option value="merchant">商家</option>
 	<option value="logistics">物流</option>
 	</select>
