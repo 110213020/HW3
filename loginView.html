@@ -15,12 +15,12 @@
 </div>
 <div v-if="UI=='register'">
     <button @click="setloginUI()">登入</button> <br/>
-	帳號: <input type="text"  v-model="account"/> <br/>
+	帳號: <input type="text"  v-model="account" /> <br/>
 
-	密碼: <input type="text" v-model="pwd"> <br>
+	密碼: <input type="text" v-model="pwd" > <br>
 
 	角色: 
-	<select name="role" v-model="role" required>
+	<select name="role" v-model="role" >
 	<option value="client" selected>顧客</option>
 	<option value="merchant">商家</option>
 	<option value="logistics">物流</option>
@@ -69,6 +69,12 @@ const todoApp= Vue.createApp({
 		},
 		addRole: function() {
 		    const that=this;
+			
+			if (!this.account || !this.pwd || this.role=='none') {
+                alert('請填寫所有必填字段');
+                return;
+            }
+			
 			let mydat = new FormData();
 			mydat.append( "account", this.account);
 			// you may also use document.getElementById('loginID').value to get that field
