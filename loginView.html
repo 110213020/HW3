@@ -21,9 +21,9 @@
 
 	角色: 
 	<select name="role" v-model="role" >
-	<option value="client" selected>顧客</option>
-	<option value="merchant">商家</option>
-	<option value="logistics">物流</option>
+	<option value="1" selected>顧客</option>
+	<option value="2">商家</option>
+	<option value="3">物流</option>
 	</select>
 	<br>
 
@@ -41,7 +41,7 @@
 </div>
 <script>
 const role=function() {
-	let a='none';
+	let a=0;
 	function get() {
 	return a;
 	}
@@ -52,25 +52,25 @@ const todoApp= Vue.createApp({
 			UI: '',
 			id: -1,
 			account: '',
-			role: 'none',
+			role: 0,
 			pwd: '',
 			info: 'xx'
 		}
 	},
 	methods: {
-		setUI: function(page) {
+		setUI2: function(page) {
 			this.UI=page;
 		},
 		setloginUI: function() {
-		    this.setUI('loginForm');
+		    this.setUI2('loginForm');
 		},
 		setRegisterUI: function() {
-		    this.setUI('register');
+		    this.setUI2('register');
 		},
 		addRole: function() {
 		    const that=this;
 			
-			if (!this.account || !this.pwd || this.role=='none') {
+			if (!this.account || !this.pwd || this.role==0) {
                 alert('請填寫所有必填字段');
                 return;
             }
@@ -91,7 +91,7 @@ const todoApp= Vue.createApp({
 			.then(function(res){return res.text(); }) //取得傳回值，轉為文字
 			.then(function(data){
 				console.log(data);
-				that.setUI('loginForm');
+				that.setUI2('loginForm');
 			})
 		},
 		checkLogin: function() {
@@ -101,39 +101,32 @@ const todoApp= Vue.createApp({
 			console.log(role, this.login.myRole);
 			*/
 			const role=Cookies.get('loginRole');
-			if (role == "client") {
-				this.setUI('main');
-			}
-            else if(role == "merchant") {
-                this.setUI('main');
-			}
-			else if(role == "logistics") {
-                this.setUI('main');
+			if (role == 1) {
+				this.setUI2('main');
 			}
 			else {
-				this.setUI('loginForm');
+				this.setUI2('loginForm');
 			}
 		},
 		login: function() {
-				const that=this;
-				let mydat = new FormData();
-				mydat.append( "account", this.account);
-				// you may also use document.getElementById('loginID').value to get that field
-				mydat.append( "pwd", this.pwd);
-				mydat.append( "act", 'login');
-
-				let url="loginControl.php";
-				//url="loginCheck.py";
-				fetch(url,{
-					method: 'POST',
-					body: mydat // 將表單物件放入fetch的body屬性
-				})
-				.then(function(res){return res.json(); }) //取得傳回值，轉為文字
-				.then(function(data){
-					console.log(data);
-					//server 會設定 loginRole cookie, 呼叫檢查的函數
-					that.checkLogin();
-				})
+			const that=this;
+			let mydat = new FormData();
+			mydat.append( "account", this.account);
+			// you may also use document.getElementById('loginID').value to get that field
+			mydat.append( "pwd", this.pwd);
+			mydat.append( "act", 'login');
+			let url="loginControl.php";
+			//url="loginCheck.py";
+			fetch(url,{
+				method: 'POST',
+				body: mydat // 將表單物件放入fetch的body屬性
+			})
+			.then(function(res){return res.json(); }) //取得傳回值，轉為文字
+			.then(function(data){
+				console.log(data);
+				//server 會設定 loginRole cookie, 呼叫檢查的函數
+				that.checkLogin();
+			})
 		},
 		loadInfo: function() {
 				const that=this;
@@ -151,7 +144,7 @@ const todoApp= Vue.createApp({
 				})
 		},
 		logout: function() {
-			Cookies.set('loginRole', 'none', { path: '' }); //path: '' means the cookie is for the current path
+			Cookies.set('loginRole', 0, { path: '' }); //path: '' means the cookie is for the current path
 			this.checkLogin();
 		}
 		

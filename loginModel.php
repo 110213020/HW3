@@ -21,7 +21,7 @@ function login($account, $pwd) {
 	if($r = mysqli_fetch_assoc($result)) {		
 		return $r['role'];
 	} else {
-		return 'none';
+		return 0;
 	}
 }
 function addRole($account,$pwd,$role) {
@@ -29,7 +29,7 @@ function addRole($account,$pwd,$role) {
 
 	$sql = "insert into users (account, password, role) values (?, ?, ?)"; //SQL中的 ? 代表未來要用變數綁定進去的地方
 	$stmt = mysqli_prepare($db, $sql); //prepare sql statement
-	mysqli_stmt_bind_param($stmt, "sss", $account, $pwd, $role); //bind parameters with variables, with types "sss":string, string ,string
+	mysqli_stmt_bind_param($stmt, "ssi", $account, $pwd, $role); //bind parameters with variables, with types "sss":string, string ,string
 	mysqli_stmt_execute($stmt);  //執行SQL
 	return True;
 }
