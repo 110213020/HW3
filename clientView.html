@@ -1,12 +1,13 @@
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script type="text/javascript" src="https://unpkg.com/vue@next"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 </head>
-
+	
 <body >
 
 <div id="main">
-<div id="list" v-if="UI=='main'">
+<div id="list" v-if="UI=='main'"><!-- 商品清單 -->
 	<h1>商品清單</h1>
 	<table border=1>
 		<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td><td>-</td></tr>
@@ -18,12 +19,32 @@
 			<td><button @click="setQanUI(job)">加入購物車</button></td>
 		</tr>
 		<button @click="setUI1('editForm')">查看購物車</button>
+		<button @click="setOrderUI('order')">查看訂單</button>
 	</table>
+	<br/>
+	<input type='button' @click="logout()" value="logout"/>
+</div>
+<div v-if="UI=='order'"><!-- 訂單 -->
+	<h1>訂單<h1>
+	<button @click="setUI('main')">查看商品清單</button>
+	<button @click="setUI1('editForm')">查看購物車</button>
+	<table border=1>
+		<tr><td>序號</td><td>商品</td><td>總額</td><td>狀態</td><td>-</td></tr>
+		<tr v-for="job in dat">
+			<td>{{job.id}}</td>
+			<td>{{job.commodity}}</td>
+			<td>{{job.total}}</td>
+			<td>{{job.status}}</td>
+			<td><button @click="">評分</button></td>
+		</tr>
+	</table>
+	<input type='button' @click="logout()" value="logout"/>
 </div>
 
-<div v-if="UI=='editForm'">
+<div v-if="UI=='editForm'"><!-- 購物車 -->
 	<h1>我的購物車</h1>
 	<button @click="setUI('main')">返回商品清單</button>
+	<button @click="setOrderUI('order')">查看訂單</button>
 	<table border=1>
 	<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td>
 		<td>數量</td><td>總價</td>
@@ -38,12 +59,14 @@
 		<td>{{job.total}}</td>
 		<td><button @click="delJob(job.id)">刪</button></td>
 	</tr>
-</table>
+	</table>
 <div>
-	<strong>購物車總價: {{ calculateTotalPrice() }}</strong>
+	<strong>購物車總價: {{ calculateTotalPrice() }}</strong><button @click="addOrder()">結帳</button>
+	<br/>
+	<input type='button' @click="logout()" value="logout"/>
 </div>
 </div>
-<div v-if="UI=='editForm2'">
+<div v-if="UI=='editForm2'"> <!-- 填寫數量 -->
 	商品名稱: {{newJob.name}} <br/>
 
 	單價: {{newJob.price}} <br>
@@ -54,13 +77,46 @@
 
 	<input type='button' @click="addJob(job)" value="save">
 </div>
+<div v-if="UI=='register'">
+	<button @click="setloginUI()">登入</button> <br/>
+	帳號: <input type="text"  v-model="account" /> <br/>
+	密碼: <input type="text" v-model="pwd" > <br>
+	角色: 
+	<select name="role" v-model="role" >
+	<option value="1" selected>顧客</option>
+	<option value="2">商家</option>
+	<option value="3">物流</option>
+	</select>
+	<br>
+	<input type='button' @click="addRole()" value="save">
+</div>
+<div v-if="UI=='loginForm'">
+	<button @click="setRegisterUI()">註冊</button> <br/>
+	Account: <input type="text"  v-model="account"/> <br/>
+	Password: <input type="password" v-model="pwd" /> <br/>
+	<input type='button' @click="login()" value="login"/> <br/>
+</div>
+<hr/>
+{{info}}
+<input type='button' @click="loadInfo()" value="load Info"/> <br/>
 </div>
 
 <script>
+const role=function() {
+	let a=0;
+	function get() {
+	return a;
+	}
+}
 const todoApp= Vue.createApp({
 	data() {
 		return {
-			UI: 'main',
+			UI: '',
+			uid: 0,
+			account: '',
+			role: 0,
+			pwd: '',
+			info: 'xx',
 			dat: [],
 			newJob: {
 				id: -1,
@@ -68,11 +124,31 @@ const todoApp= Vue.createApp({
 				price: '',
 				content: '',
 				number: 0,
-				total: 0
+				total: 0,
+				uid:'',
 			}
 		}
 	},
 	methods: {
+		addOrder: function () {
+			const that=this; 
+			console.log(this.account);
+			fetch('clientControl.php?act=addOrder&account='+this.account)
+			.then(function(res){return res.text(); }) //取得傳回值，轉為文字
+			.then(function(data){ 
+				that.delCart();
+				that.setUI('main');
+				
+			})
+		},
+		delCart: function() {
+			const that = this;
+			fetch('clientControl.php?act=delCart&account='+this.account)
+			.then(function(res){return res.text(); }) //取得傳回值，轉為文字
+			.then(function(data){ 
+				console.log(data);
+			})
+		},
 		loadList: function () {
 			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
 			fetch('clientControl.php?act=listJob')
@@ -87,16 +163,26 @@ const todoApp= Vue.createApp({
 			});
 		},
 		loadshoppingList: function () {
-			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
-			fetch('clientControl.php?act=listshopping')
+			const that=this; 
+			console.log(this.account);
+			fetch('clientControl.php?act=listshopping&account='+this.account)
 			.then(function(response) {
 				return response.json();
 			})
 			.then(function(myJson) {
-				//we are inside the callback function, now `this` means the function, not vm6
-				//we will use `that` to access vm6
+				//console.log(data);
 				that.dat = myJson;
-				//vm6.dat = myJson;
+			});
+		},
+		loadOrder: function() {
+			const that = this;
+			fetch('clientControl.php?act=loadOrder&account='+this.account)
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(myJson) {
+				//console.log(data);
+				that.dat = myJson;
 			});
 		},
 		delJob: function (id) {
@@ -116,26 +202,25 @@ const todoApp= Vue.createApp({
 			const that=this;
 			let mydat = new FormData();
 			mydat.append( "dat", JSON.stringify(this.newJob) );
-
-			let url="clientControl.php?act=addJob";
+			let url="clientControl.php?act=addJob&account="+this.account;
 			fetch(url,{
 				method: 'POST',
 				body: mydat // 將表單物件放入fetch的body屬性
 			})
 			.then(function(res){return res.text(); }) //取得傳回值，轉為文字
 			.then(function(data){ 
-				console.log(data);
+				//console.log(data);
 				that.setUI('main');
 				//that.loadList();
 			})
 		},
 		calculateTotalPrice: function () {
-        let totalPrice = 0;
-        for (const job of this.dat) {
-            totalPrice += job.total;
-        }
-        return totalPrice;
-    	},
+		let totalPrice = 0;
+		for (const job of this.dat) {
+			totalPrice += job.total;
+		}
+		return totalPrice;
+		},
 		setQanUI: function(job) {
 			this.newJob=job;
 			this.setUI('editForm2');
@@ -147,10 +232,101 @@ const todoApp= Vue.createApp({
 		setUI1: function(page) {
 			this.UI=page;
 			this.loadshoppingList();
+		},
+		setUI2: function(page) {
+			this.UI=page;
+		},
+		setOrderUI: function(page) {
+			this.UI=page;
+			this.loadOrder();
+		},
+		setloginUI: function() {
+		    this.setUI2('loginForm');
+		},
+		setRegisterUI: function() {
+		    this.setUI2('register');
+		},
+		addRole: function() {
+		    const that=this;
+			
+			if (!this.account || !this.pwd || this.role==0) {
+                alert('請填寫所有必填字段');
+                return;
+            }
+			
+			let mydat = new FormData();
+			mydat.append( "account", this.account);
+			// you may also use document.getElementById('loginID').value to get that field
+			mydat.append( "pwd", this.pwd);
+			mydat.append( "role", this.role);
+			mydat.append( "act", 'addRole');
+
+			let url="loginControl.php";
+			//url="loginCheck.py";
+			fetch(url,{
+				method: 'POST',
+				body: mydat // 將表單物件放入fetch的body屬性
+			})
+			.then(function(res){return res.text(); }) //取得傳回值，轉為文字
+			.then(function(data){
+				console.log(data);
+				that.setUI2('loginForm');
+			})
+		},
+		checkLogin: function() {
+
+			const role=Cookies.get('loginRole');
+			if (role == 1) {
+				this.setUI2('main');
+			}
+			else {
+				this.setUI2('loginForm');
+			}
+		},
+		login: function() {
+			const that=this;
+			let mydat = new FormData();
+			mydat.append( "account", this.account);
+			// you may also use document.getElementById('loginID').value to get that field
+			mydat.append( "pwd", this.pwd);
+			mydat.append( "act", 'login');
+			let url="loginControl.php";
+			
+			fetch(url,{
+				method: 'POST',
+				body: mydat // 將表單物件放入fetch的body屬性
+			})
+			.then(function(res){return res.json(); }) //取得傳回值，轉為文字
+			.then(function(data){
+				console.log(data);
+				
+				//server 會設定 loginRole cookie, 呼叫檢查的函數
+				that.checkLogin();
+				that.setUI('main');
+			})
+		},
+		loadInfo: function() {
+				const that=this;
+				let mydat = new FormData();
+				mydat.append( "act", 'showInfo');
+				let url="loginControl.php";
+				//url="loginCheck.py";
+				fetch(url,{
+					method: 'POST',
+					body: mydat
+				})
+				.then(function(res){return res.text(); }) //取得傳回值，轉為文字
+				.then(function(data){
+					that.info = data;
+				})
+		},
+		logout: function() {
+			Cookies.set('loginRole', 0, { path: '' }); //path: '' means the cookie is for the current path
+			this.checkLogin();
 		}
 	},
 	created() {
-		this.loadList();
+		this.checkLogin();
 	}
 }).mount("#main");
 </script>
