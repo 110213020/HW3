@@ -4,6 +4,11 @@ require('clientModel.php');
 $act=$_REQUEST['act'];
 switch ($act)
 {
+case 'evaluate':
+	$jsonStr = $_POST['dat'];
+	$job = json_decode($jsonStr);
+	evaluate($job->id, $job->evaluate);
+	return;
 case "addOrder":
 	$account=$_REQUEST['account'];
 	addOrder($account);
@@ -26,7 +31,7 @@ case "addJob": // 加入購物車
 	$jsonStr = $_POST['dat'];
 	$job = json_decode($jsonStr);
 	//should verify first
-	addJob($job->name,$job->price,$job->content,$job->number,$account);
+	addJob($job->name,$job->price,$job->content,$job->number,$account,$job->Mid);
 	return;
 case "delJob": // 刪除購物車品項
 	$id=(int)$_REQUEST['id']; //$_GET, $_REQUEST
@@ -59,6 +64,7 @@ case "login": // 登入
 	}
 	echo json_encode($msg);
 	return;
+	break;
 case 'showInfo':
 	//檢查是否已登入
 	$loginRole=$_COOKIE['loginRole'];
@@ -77,8 +83,18 @@ case 'addRole': // 註冊
 	$account=$_REQUEST['account'];
 	$pwd=$_REQUEST['pwd'];
 	$role=(int)$_REQUEST['role'];
-	addRole($account,$pwd,$role);
-	break;
+	$condition=addRole($account,$pwd,$role);
+	if ($condition > 0) {
+		$msg=[
+			"msg" => "OK",
+		];
+	} else {
+		$msg=[
+			"msg" => "fail",
+		];
+	}
+	echo json_encode($msg);
+	return ;
 
 default:
 /*

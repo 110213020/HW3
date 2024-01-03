@@ -1,26 +1,47 @@
 <?php
 require('dbconfig.php');
 
+function evaluate($id, $evaluate)
+{
+    global $db;
+	$sql = 'update `order` set evaluate=? where id=?';
+	$stmt = mysqli_prepare($db, $sql);
+	mysqli_stmt_bind_param($stmt, "si", $evaluate, $id);
+	mysqli_stmt_execute($stmt);
+	return True;
+}
 function addOrder($account)
 {
 	global $db;
-	$sql = "select `name`,`number`,`total` from shopping where uid=?;";
+	// 先找商家id
+	$sql = "select distinct `Mid` from shopping where uid=?;";
 	$stmt = mysqli_prepare($db, $sql);
     mysqli_stmt_bind_param($stmt, "s", $account);
     mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-	$commodity = '';
-	$total=0;
+	$result = mysqli_stmt_get_result($stmt);
+	$Mid='';
 	while($r = mysqli_fetch_assoc($result))
 	{
-		$commodity .= $r['name'] . ' * ' . $r['number'] .','; //將此筆資料新增到字串中
-		$total+= (int)$r['total'];
+		$Mid= $r['Mid'];
+		// 拆單
+		$sql = "select `name`,`number`,`total` from shopping where uid=? and Mid=?;";
+		$stmt = mysqli_prepare($db, $sql);
+    	mysqli_stmt_bind_param($stmt, "ss", $account, $Mid);
+    	mysqli_stmt_execute($stmt);
+    	$result2 = mysqli_stmt_get_result($stmt);
+		$commodity = ''; // 商品內容
+		$total=0; // 總金額
+		while($r = mysqli_fetch_assoc($result2))
+		{
+			$commodity .= $r['name'] . ' * ' . $r['number'] .','; //將此筆資料新增到字串中
+			$total+= (int)$r['total'];
+		}
+		$sql = "insert into `order` (commodity, total, userid, Mid) values (?, ?, ?, ?)";
+		$stmt = mysqli_prepare($db, $sql);
+		mysqli_stmt_bind_param($stmt,"siss",$commodity, $total, $account, $Mid);
+		mysqli_stmt_execute($stmt);
 	}
 
-	$sql = "insert into `order` (commodity, total, userid) values (?, ?, ?)";
-	$stmt = mysqli_prepare($db, $sql);
-	mysqli_stmt_bind_param($stmt,"sis",$commodity, $total, $account);
-	mysqli_stmt_execute($stmt);
 	return true;
 }
 function delCart($account)
@@ -47,7 +68,6 @@ function getJobList() // 商品
 	}
 	return $rows;
 }
-
 function getJobList1($account) // 購物車
 {
 	global $db;
@@ -65,7 +85,6 @@ function getJobList1($account) // 購物車
 	}
 	return $rows;
 }
-
 function getOrder($account) 
 {
 	global $db;
@@ -81,8 +100,7 @@ function getOrder($account)
 	}
 	return $rows;
 }
-
-function addJob($name, $price, $content, $number,$account) // 加入購物車
+function addJob($name, $price, $content, $number,$account, $Mid) // 加入購物車
 {
     global $db;
 
@@ -94,9 +112,9 @@ function addJob($name, $price, $content, $number,$account) // 加入購物車
 
     if (mysqli_num_rows($result) == 0) {
         $total = $number * $price;
-        $sql = "insert into shopping (name, price, content, number, total, uid) values (?, ?, ?, ?, ?, ?)";
+        $sql = "insert into shopping (name, price, content, number, total, uid, mid) values (?, ?, ?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($db, $sql);
-        mysqli_stmt_bind_param($stmt, "sisiis", $name, $price, $content, $number, $total, $account);
+        mysqli_stmt_bind_param($stmt, "sisiiss", $name, $price, $content, $number, $total, $account, $Mid);
         mysqli_stmt_execute($stmt);
         return true;
     } else {
@@ -112,7 +130,6 @@ function addJob($name, $price, $content, $number,$account) // 加入購物車
 
     //return false;
 }
-
 function delJob($id) // 刪除購物車品項
 {
 	global $db;
@@ -138,14 +155,24 @@ function login($account, $pwd) { // 登入
 		return 0;
 	}
 }
-function addRole($account,$pwd,$role) { // 註冊
+function addRole($newAccount,$pwd,$role) { // 註冊
 	global $db;
+	$sql = "select `id` from users where account=?";
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $newAccount);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-	$sql = "insert into users (account, password, role) values (?, ?, ?)"; //SQL中的 ? 代表未來要用變數綁定進去的地方
-	$stmt = mysqli_prepare($db, $sql); //prepare sql statement
-	mysqli_stmt_bind_param($stmt, "ssi", $account, $pwd, $role); //bind parameters with variables, with types "sss":string, string ,string
-	mysqli_stmt_execute($stmt);  //執行SQL
-	return True;
+    if (mysqli_num_rows($result) == 0) {
+		$sql = "insert into users (account, password, role) values (?, ?, ?)"; //SQL中的 ? 代表未來要用變數綁定進去的地方
+		$stmt = mysqli_prepare($db, $sql); //prepare sql statement
+		mysqli_stmt_bind_param($stmt, "ssi", $newAccount, $pwd, $role); //bind parameters with variables, with types "sss":string, string ,string
+		mysqli_stmt_execute($stmt);  //執行SQL
+		return 1;
+	} else {
+		return 0;
+	}
+
 }
 
 /*
