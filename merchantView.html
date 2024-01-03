@@ -9,6 +9,7 @@
 <div id="list" v-if="UI=='main'">
 	<h1>This is the main page.</h1>
 	<button @click="setAddUI()">Load Add Form</button>
+	<button @click="setOrderUI()">showOrder</button>
 	<table border=1>
 		<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td><td>-</td></tr>
 		<tr v-for="job in dat">
@@ -17,6 +18,22 @@
 			<td>{{job.price}}</td>
 			<td>{{job.content}}</td>
 			<td><button @click="delJob(job.id)">刪</button><button @click="setEditUI(job)">改</button></td>
+		</tr>
+	</table>
+</div>
+<div v-if="UI=='status'">
+	<h1>This is the main page.</h1>
+	<button @click="setResetUI()">listForm</button>
+	<table border=1>
+		<tr><td>流水號</td><td>商品</td><td>總價</td><td>客戶</td><td>狀態</td><td>-</td><td>-</td></tr>
+		<tr v-for="job in dat">
+			<td>{{job.id}}</td>
+			<td>{{job.commodity}}</td>
+			<td>{{job.total}}</td>
+			<td>{{job.userId}}</td>
+			<td>{{job.status}}</td>
+			<td><button @click="setS1(job.id)">把狀態標記為處理中</button></td>
+			<td><button @click="setS2(job.id)">把狀態標記為寄送中</button></td>
 		</tr>
 	</table>
 </div>
@@ -126,6 +143,43 @@ const todoApp= Vue.createApp({
 				content: ''
 			};
 			this.setUI('editForm');
+		},
+		setOrderUI: function() {
+			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
+			fetch('merchantControl.php?act=sOrder')
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(myJson) {
+				//we are inside the callback function, now `this` means the function, not vm6
+				//we will use `that` to access vm6
+
+				that.dat = myJson;
+				//todoApp.dat = myJson;
+			});
+			this.setUI('status');
+		},
+		setS1: function(id) {
+			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
+			fetch('merchantControl.php?act=mark1&id='+id)
+			.then(response => response.text())
+			.then(data => {
+				console.log(id);
+                this.setOrderUI();
+			});
+		},
+		setS2: function(id) {
+			const that=this; //this  ==> stands for vm6. let's save `this` to `that`
+			fetch('merchantControl.php?act=mark2&id='+id)
+			.then(response => response.text())
+			.then(data => {
+				console.log(id);
+                this.setOrderUI();
+			});
+		},
+		setResetUI: function() {
+		    this.loadList();
+			this.setUI("main");
 		},
 		setUI: function(page) {
 			this.UI=page;

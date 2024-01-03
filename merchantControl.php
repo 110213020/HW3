@@ -7,6 +7,10 @@ case "listJob":
   $jobs=getJobList();
   echo json_encode($jobs);
   return;  
+case "sOrder":
+  $jobs=getOrderList();
+  echo json_encode($jobs);
+  return; 
 case "addJob":
 	
 	$jsonStr = $_POST['dat'];
@@ -26,6 +30,14 @@ case "delJob":
 	//verify
 	delJob($id);
 	return;
+case "mark1":
+    $id = (int)$_REQUEST['id'];
+    toMark1($id);
+    break;
+case "mark2":
+    $id = (int)$_REQUEST['id'];
+    toMark2($id);
+    break;
 default:
   
 }
