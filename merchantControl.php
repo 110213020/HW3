@@ -4,19 +4,21 @@ require('merchantModel.php');
 $act=$_REQUEST['act'];
 switch ($act) {
 case "listJob":
-  $jobs=getJobList();
+  $account=$_REQUEST['account'];
+  $jobs=getJobList($account);
   echo json_encode($jobs);
   return;  
 case "sOrder":
-  $jobs=getOrderList();
+  $account=$_REQUEST['account'];
+  $jobs=getOrderList($account);
   echo json_encode($jobs);
   return; 
 case "addJob":
-	
+	$account=$_REQUEST['account'];
 	$jsonStr = $_POST['dat'];
 	$job = json_decode($jsonStr);
 	//should verify first
-	addJob($job->name,$job->price,$job->content);
+	addJob($job->name,$job->price,$job->content,$account);
 	return;
 case "updateJob":
 
