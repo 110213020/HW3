@@ -30,9 +30,10 @@
 		<button @click="setUI('main')">查看商品清單</button>
 		<button @click="setUI1('editForm')">查看購物車</button>
 		<table border=1>
-			<tr><td>序號</td><td>商品</td><td>總額</td><td>狀態</td><td>評價</td><td>-</td></tr>
+			<tr><td>序號</td><td>商家</td><td>商品</td><td>總額</td><td>狀態</td><td>評價</td><td>-</td></tr>
 			<tr v-for="job in dat">
 				<td>{{job.id}}</td>
+				<td>{{job.Mid}}</td>
 				<td>{{job.commodity}}</td>
 				<td>{{job.total}}</td>
 				<td>{{job.status}}</td>
