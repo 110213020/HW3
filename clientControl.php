@@ -64,7 +64,7 @@ case "login": // 登入
 	}
 	echo json_encode($msg);
 	return;
-	break;
+
 case 'showInfo':
 	//檢查是否已登入
 	$loginRole=$_COOKIE['loginRole'];
