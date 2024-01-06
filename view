@@ -135,7 +135,7 @@
 
 		商品說明: <textarea v-model="newJobs.content"></textarea><br>
 
-		<button @click="addJobM()">save</button>
+		<button @click="setResetUI()">取消</button><button @click="addJobM()">save</button>
 	</div>
 	<div v-if="UI=='editForm2M'">
 		商品名稱: <input type="text"  v-model="newJobs.name"/> <br/>
@@ -144,7 +144,7 @@
 
 		商品說明: <textarea v-model="newJobs.content"></textarea><br>
 
-		<button @click="updateJobM()">save</button>
+		<button @click="setResetUI()">取消</button><button @click="updateJobM()">save</button>
 	</div>
 	<div id="list" v-if="UI=='main'"><!-- 商品清單 -->
 		<h1>商品清單</h1>

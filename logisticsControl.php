@@ -13,11 +13,6 @@ switch ($act)
         $id = (int)$_REQUEST['id'];
         markOrderDelivered($id);
         break;
-
-    case "listShop": //列出商家訂單
-        $jobs=getJobrList();
-        echo json_encode($jobs);
-        return; 
     case "markShipped": //已寄送
         $id = (int)$_REQUEST['id'];
         markOrderShipped($id);
