@@ -336,7 +336,13 @@
 	
 				const role=Cookies.get('loginRole');
 				if (role == 1) {
-					this.setUI('main');
+					this.setUI('main'); // 跑顧客UI
+				}
+				else if (role == 2) {
+					this.setUI(); // 跑商家UI
+				}
+				else if (role == 3) {
+					this.setUI(); // 跑物流UI
 				}
 				else {
 					this.setUI2('loginForm');
