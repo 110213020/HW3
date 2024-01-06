@@ -29,38 +29,15 @@
                     <button @click="markDelivered(order.id)">
                         標記為已送達
                     </button>
-
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <div v-if="UI=='mainL2'">
-        <h1>商家訂單</h1>
-        <table border=1>
-            <tr>
-                <td>序號</td>
-                <td>商品</td>
-                <td>總額</td>
-                <td>狀態</td>
-                <td>客戶序號</td>
-                <td>-</td>
-            </tr>
-            <tr v-for="order in orders">
-                <td>{{ order.id }}</td>
-                <td>{{ order.commodity }}</td>
-                <td>{{ order.total }}</td>
-                <td>{{ order.status }}</td>
-                <td>{{ order.userId }}</td>
-                <td>
-                    <button @click="markShipped(order.id)">
+					<button @click="markShipped(order.id)">
                         標記為已寄送
                     </button>
-
                 </td>
             </tr>
         </table>
+		<input type='button' @click="logout()" value="logout"/>
     </div>
+
 	<div id="list" v-if="UI=='mainM'">
 		<h1>This is the main page.</h1>
 		<button @click="setAddUI()">Load Add Form</button>
@@ -278,7 +255,7 @@
 			}
 		},
 		methods: {
-		    loadOrders()
+		    loadCustomerOrders()
             {
                 fetch('logisticsControl.php?act=listOrder')
                     .then(response => response.json())
@@ -296,17 +273,7 @@
                     {
                         console.log(data);
                         // 在此處刷新訂單列表
-                        this.loadOrders();
-                    });
-            },
-           // 列出商家訂單
-           loadOrders1()
-            {
-                fetch('logisticsControl.php?act=listShop')
-                    .then(response => response.json())
-                    .then(data => 
-                    {
-                        this.orders = data;
+                        this.loadCustomerOrders();
                     });
             },
             // 標記訂單為已寄送
@@ -317,7 +284,7 @@
                     .then(data => {
                         console.log(data);
                         // 在此處刷新訂單列表
-                        this.loadOrders();
+                        this.loadCustomerOrders();
                     });
             },
 			loadListM: function () {
@@ -566,6 +533,10 @@
 				this.UI=page;
 				this.loadOrder();
 			},
+			setUIL:function(page){
+				this.UI = page;
+				this.loadCustomerOrders();
+			},
 			setloginUI: function() {
 				this.setUI2('loginForm');
 			},
@@ -608,7 +579,7 @@
 					this.setResetUI(); // 跑商家UI
 				}
 				else if (role == 3) {
-					this.setUI(); // 跑物流UI
+					this.setUIL('mainL'); // 跑物流UI
 				}
 				else {
 					this.setUI2('loginForm');
