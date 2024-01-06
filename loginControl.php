@@ -40,13 +40,22 @@ case 'logout':
 	//setcookie('loginRole',0,httponly:true);
 	setcookie('loginRole',0);
 	break;
-case 'addRole':
-    $account=$_REQUEST['account'];
+case 'addRole': // 註冊
+	$account=$_REQUEST['account'];
 	$pwd=$_REQUEST['pwd'];
 	$role=(int)$_REQUEST['role'];
-
-	addRole($account,$pwd,$role);
-	break;
+	$condition=addRole($account,$pwd,$role);
+	if ($condition > 0) {
+		$msg=[
+			"msg" => "OK",
+		];
+	} else {
+		$msg=[
+			"msg" => "fail",
+		];
+	}
+	echo json_encode($msg);
+	return ;
 default:
 }
 

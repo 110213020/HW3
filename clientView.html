@@ -19,15 +19,15 @@
 				<td>{{job.Mid}}</td>
 				<td><button @click="setQanUI(job)">加入購物車</button></td>
 			</tr>
-			<button @click="setUI1('editForm')">查看購物車</button>
+			<button @click="setUI1('editForm')">查看購物車</button>&nbsp;
 			<button @click="setOrderUI('order')">查看訂單</button>
 		</table>
 		<br/>
-		<input type='button' @click="logout()" value="logout"/>
+		<button @click="logout()">登出</button>
 	</div>
 	<div v-if="UI=='order'"><!-- 訂單 -->
 		<h1>訂單<h1>
-		<button @click="setUI('main')">查看商品清單</button>
+		<button @click="setUI('main')">查看商品清單</button>&nbsp;
 		<button @click="setUI1('editForm')">查看購物車</button>
 		<table border=1>
 			<tr><td>序號</td><td>商家</td><td>商品</td><td>總額</td><td>狀態</td><td>評價</td><td>-</td></tr>
@@ -41,7 +41,7 @@
 				<td><button @click="setEvaluate(job)">評分</button></td>
 			</tr>
 		</table>
-		<input type='button' @click="logout()" value="logout"/>
+		<button @click="logout()">登出</button>
 	</div>
 	
 	<div v-if="UI=='evaluateUI'"> <!-- 填寫評分 -->
@@ -64,12 +64,12 @@
 		</select>
 		<br>
 	
-		<button @click="setOrderUI('order')">取消</button>&nbsp;&nbsp;&nbsp;<input type='button' @click="evaluate()" value="save">
+		<button @click="setOrderUI('order')">取消</button>&nbsp;&nbsp;&nbsp;<button @click="evaluate()">save</button>
 	</div>
 	
 	<div v-if="UI=='editForm'"><!-- 購物車 -->
 		<h1>我的購物車</h1>
-		<button @click="setUI('main')">返回商品清單</button>
+		<button @click="setUI('main')">返回商品清單</button>&nbsp;
 		<button @click="setOrderUI('order')">查看訂單</button>
 		<table border=1>
 		<tr><td>序號</td><td>商品名稱</td><td>單價</td><td>商品說明</td>
@@ -90,7 +90,7 @@
 	<div>
 		<strong>購物車總價: {{ calculateTotalPrice() }}</strong><button @click="addOrder()">結帳</button>
 		<br/>
-		<input type='button' @click="logout()" value="logout"/>
+		<button @click="logout()">登出</button>
 	</div>
 	</div>
 	<div v-if="UI=='editForm2'"> <!-- 填寫數量 -->
@@ -102,7 +102,7 @@
 		
 		數量: <input type="text" v-model="newJob.number"><br>
 	
-		<button @click="setUI('main')">取消</button>&nbsp;&nbsp;&nbsp;<input type='button' @click="addJob()" value="save">
+		<button @click="setUI('main')">取消</button>&nbsp;&nbsp;&nbsp;<button @click="addJob()">save</button>
 	</div>
 	<div v-if="UI=='register'">
 		<button @click="setloginUI()">登入</button> <br/>
@@ -115,17 +115,17 @@
 		<option value="3">物流</option>
 		</select>
 		<br>
-		<input type='button' @click="addRole()" value="save">
+		<button @click="addRole()">save</button>
 	</div>
 	<div v-if="UI=='loginForm'">
 		<button @click="setRegisterUI()">註冊</button> <br/>
 		Account: <input type="text"  v-model="account"/> <br/>
 		Password: <input type="password" v-model="pwd" /> <br/>
-		<input type='button' @click="login()" value="login"/> <br/>
+		<button @click="login()">登入</button> <br/>
 	</div>
 	<hr/>
 	{{info}}
-	<input type='button' @click="loadInfo()" value="load Info"/> <br/>
+	<button @click="loadInfo()">load Info</button> <br/>
 	</div>
 	
 	<script>
