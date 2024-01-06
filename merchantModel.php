@@ -1,10 +1,11 @@
 <?php
 require('dbconfig.php');
 
-function getJobList() {
+function getJobList($account) {
 	global $db;
-	$sql = "select * from shop;";
+	$sql = "select * from shop where Mid = ?;";
 	$stmt = mysqli_prepare($db, $sql ); //precompile sql指令，建立statement 物件，以便執行SQL
+	mysqli_stmt_bind_param($stmt, "s", $account);
 	mysqli_stmt_execute($stmt); //執行SQL
 	$result = mysqli_stmt_get_result($stmt); //取得查詢結果
 
@@ -14,10 +15,11 @@ function getJobList() {
 	}
 	return $rows;
 }
-function getOrderList() {
+function getOrderList($account) {
 	global $db;
-	$sql = "select * from `order`;";
+	$sql = "select * from `order` where Mid = ?;";
 	$stmt = mysqli_prepare($db, $sql ); //precompile sql指令，建立statement 物件，以便執行SQL
+	mysqli_stmt_bind_param($stmt, "s", $account);
 	mysqli_stmt_execute($stmt); //執行SQL
 	$result = mysqli_stmt_get_result($stmt); //取得查詢結果
 
@@ -27,12 +29,12 @@ function getOrderList() {
 	}
 	return $rows;
 }
-function addJob($name,$price,$content) {
+function addJob($name,$price,$content,$account) {
 	global $db;
 
-	$sql = "insert into shop (name, price, content) values (?, ?, ?)"; //SQL中的 ? 代表未來要用變數綁定進去的地方
+	$sql = "insert into shop (name, price, content,Mid) values (?, ?, ?, ?)"; //SQL中的 ? 代表未來要用變數綁定進去的地方
 	$stmt = mysqli_prepare($db, $sql); //prepare sql statement
-	mysqli_stmt_bind_param($stmt, "sis", $name, $price,$content); //bind parameters with variables, with types "sss":string, string ,string
+	mysqli_stmt_bind_param($stmt, "siss", $name, $price,$content,$account); //bind parameters with variables, with types "sss":string, string ,string
 	mysqli_stmt_execute($stmt);  //執行SQL
 	return True;
 }
