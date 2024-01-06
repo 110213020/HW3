@@ -58,20 +58,44 @@ function delJob($id) {
 }
 function toMark1($id){
     global $db;
-    $status = '處理中';
-    $sql = "UPDATE `order` SET status=? WHERE id=?";
-    $stmt = mysqli_prepare($db, $sql);
-    mysqli_stmt_bind_param($stmt, "si", $status, $id);
-    mysqli_stmt_execute($stmt);
+	
+	$sql1 = "select status from `order` where id=?;";
+	$stmt1 = mysqli_prepare($db, $sql1 ); //precompile sql指令，建立statement 物件，以便執行SQL
+	mysqli_stmt_bind_param($stmt1, "i", $id);
+	mysqli_stmt_execute($stmt1); //執行SQL
+	$result1 = mysqli_stmt_get_result($stmt1); //取得查詢結果
+    $rows = ''; //要回傳的陣列
+	while($r = mysqli_fetch_assoc($result1)) {
+		$rows = $r['status']; //將此筆資料新增到陣列中
+	}
+	if ( $rows == '未處理') {
+		$status = '處理中';
+		$sql = "UPDATE `order` SET status=? WHERE id=?";
+		$stmt = mysqli_prepare($db, $sql);
+		mysqli_stmt_bind_param($stmt, "si", $status, $id);
+		mysqli_stmt_execute($stmt);
+	}
     return True;
 }
 function toMark2($id){
     global $db;
-    $status = '寄送中';
-    $sql = "UPDATE `order` SET status=? WHERE id=?";
-    $stmt = mysqli_prepare($db, $sql);
-    mysqli_stmt_bind_param($stmt, "si", $status, $id);
-    mysqli_stmt_execute($stmt);
+	
+	$sql1 = "select status from `order` where id=?;";
+	$stmt1 = mysqli_prepare($db, $sql1 ); //precompile sql指令，建立statement 物件，以便執行SQL
+	mysqli_stmt_bind_param($stmt1, "i", $id);
+	mysqli_stmt_execute($stmt1); //執行SQL
+	$result1 = mysqli_stmt_get_result($stmt1); //取得查詢結果
+    $rows = ''; //要回傳的陣列
+	while($r = mysqli_fetch_assoc($result1)) {
+		$rows = $r['status']; //將此筆資料新增到陣列中
+	}
+	if ( $rows == '處理中') {
+		$status = '寄送中';
+		$sql = "UPDATE `order` SET status=? WHERE id=?";
+		$stmt = mysqli_prepare($db, $sql);
+		mysqli_stmt_bind_param($stmt, "si", $status, $id);
+		mysqli_stmt_execute($stmt);
+	}
     return True;
 }
 ?>
