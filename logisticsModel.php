@@ -25,6 +25,8 @@ function markOrderDelivered($id) //已送達
     $stmt = mysqli_prepare($db, $sql);
     mysqli_stmt_bind_param($stmt, "si", $status, $id);
     mysqli_stmt_execute($stmt);
+
+
     return true;
 }
 
@@ -47,12 +49,45 @@ function getJobList() //列出商家貨物
 function markOrderShipped($id) //已寄送
 {
     global $db;
-    $status = '已寄送';
-    $sql = "UPDATE `order` SET status=? WHERE id=?";
-    $stmt = mysqli_prepare($db, $sql);
-    mysqli_stmt_bind_param($stmt, "si", $status, $id);
-    mysqli_stmt_execute($stmt);
-    return true;
+
+    // 先檢查是否已經是 '已送達' 狀態，是的話就不進行更新
+    $currentStatus = getCurrentStatus($id);
+    
+    if ($currentStatus !== '已送達') {
+        $status = '已寄送';
+        $sql = "UPDATE `order` SET status=? WHERE id=?";
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "si", $status, $id);
+        mysqli_stmt_execute($stmt);
+        return true;
+    }
+
+    return false;  // 如果已經是 '已送達'，返回 false 表示更新失敗
 }
+
+function getCurrentStatus($id) {
+    global $db;
+    $sql = "SELECT status FROM `order` WHERE id = ?";
+    $stmt = mysqli_prepare($db, $sql);
+
+    if (!$stmt) {
+        die('SQL 錯誤: ' . mysqli_error($db));
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $id);
+
+    if (!mysqli_stmt_execute($stmt)) {
+        die('執行 SQL 錯誤: ' . mysqli_stmt_error($stmt));
+    }
+
+    mysqli_stmt_bind_result($stmt, $status);
+
+    if (mysqli_stmt_fetch($stmt)) {
+        return $status;
+    }
+
+    return null;
+}
+
 
 ?>
