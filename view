@@ -2,7 +2,64 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<script type="text/javascript" src="https://unpkg.com/vue@3.0.11"></script>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        #main {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 8px 12px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</head>
 		
 	<body >
@@ -35,7 +92,7 @@
                 </td>
             </tr>
         </table>
-		<input type='button' @click="logout()" value="logout"/>
+		<button @click="logout()">logout</button>
     </div>
 
 	<div id="list" v-if="UI=='mainM'">
@@ -53,7 +110,7 @@
 			</tr>
 		</table>
 		<hr/>
-		<input type='button' @click="logout()" value="logout"/>
+		<button @click="logout()">logout</button>
 	</div>
 	<div v-if="UI=='status'">
 		<h1>This is the main page.</h1>
@@ -78,7 +135,7 @@
 
 		商品說明: <textarea v-model="newJobs.content"></textarea><br>
 
-		<input type='button' @click="addJobM()" value="save">
+		<button @click="addJobM()">save</button>
 	</div>
 	<div v-if="UI=='editForm2M'">
 		商品名稱: <input type="text"  v-model="newJobs.name"/> <br/>
@@ -87,7 +144,7 @@
 
 		商品說明: <textarea v-model="newJobs.content"></textarea><br>
 
-		<input type='button' @click="updateJobM()" value="save">
+		<button @click="updateJobM()">save</button>
 	</div>
 	<div id="list" v-if="UI=='main'"><!-- 商品清單 -->
 		<h1>商品清單</h1>
@@ -105,7 +162,7 @@
 			<button @click="setOrderUI('order')">查看訂單</button>
 		</table>
 		<br/>
-		<input type='button' @click="logout()" value="logout"/>
+		<button @click="logout()">logout</button>
 	</div>
 	<div v-if="UI=='order'"><!-- 訂單 -->
 		<h1>訂單<h1>
@@ -123,7 +180,7 @@
 				<td><button @click="setEvaluate(job)">評分</button></td>
 			</tr>
 		</table>
-		<input type='button' @click="logout()" value="logout"/>
+		<button @click="logout()">logout</button>
 	</div>
 	
 	<div v-if="UI=='evaluateUI'"> <!-- 填寫評分 -->
@@ -146,7 +203,7 @@
 		</select>
 		<br>
 	
-		<button @click="setOrderUI('order')">取消</button>&nbsp;&nbsp;&nbsp;<input type='button' @click="evaluate()" value="save">
+		<button @click="setOrderUI('order')">取消</button>&nbsp;&nbsp;&nbsp;<button @click="evaluate()">save</button>
 	</div>
 	
 	<div v-if="UI=='editForm'"><!-- 購物車 -->
@@ -172,7 +229,7 @@
 	<div>
 		<strong>購物車總價: {{ calculateTotalPrice() }}</strong><button @click="addOrder()">結帳</button>
 		<br/>
-		<input type='button' @click="logout()" value="logout"/>
+		<button @click="logout()">logout</button>
 	</div>
 	</div>
 	<div v-if="UI=='editForm2'"> <!-- 填寫數量 -->
@@ -184,7 +241,7 @@
 		
 		數量: <input type="text" v-model="newJob.number"><br>
 	
-		<button @click="setUI('main')">取消</button>&nbsp;&nbsp;&nbsp;<input type='button' @click="addJob()" value="save">
+		<button @click="setUI('main')">取消</button>&nbsp;&nbsp;&nbsp;<button @click="addJob()">save</button>
 	</div>
 	<div v-if="UI=='register'">
 		<button @click="setloginUI()">登入</button> <br/>
@@ -197,17 +254,17 @@
 		<option value="3">物流</option>
 		</select>
 		<br>
-		<input type='button' @click="addRole()" value="save">
+		<button @click="addRole()">save</button>
 	</div>
 	<div v-if="UI=='loginForm'">
 		<button @click="setRegisterUI()">註冊</button> <br/>
 		Account: <input type="text"  v-model="account"/> <br/>
 		Password: <input type="password" v-model="pwd" /> <br/>
-		<input type='button' @click="login()" value="login"/> <br/>
+		<button @click="login()">login</button><br/>
 	</div>
 	<hr/>
 	{{info}}
-	<input type='button' @click="loadInfo()" value="load Info"/> <br/>
+	<button @click="loadInfo()">load Info</button><br/>
 	</div>
 	
 	<script>
