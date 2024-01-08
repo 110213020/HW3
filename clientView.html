@@ -112,7 +112,6 @@
 		<select name="role" v-model="role" >
 		<option value="1" selected>顧客</option>
 		<option value="2">商家</option>
-		<option value="3">物流</option>
 		</select>
 		<br>
 		<button @click="addRole()">save</button>
@@ -320,7 +319,7 @@
 				mydat.append( "role", this.role);
 				mydat.append( "act", 'addRole');
 	
-				let url="clientControl.php";
+				let url="loginControl.php";
 				//url="loginCheck.py";
 				fetch(url,{
 					method: 'POST',
@@ -355,7 +354,7 @@
 				// you may also use document.getElementById('loginID').value to get that field
 				mydat.append( "pwd", this.pwd);
 				mydat.append( "act", 'login');
-				let url="clientControl.php";
+				let url="loginControl.php";
 				
 				fetch(url,{
 					method: 'POST',
@@ -374,7 +373,7 @@
 					const that=this;
 					let mydat = new FormData();
 					mydat.append( "act", 'showInfo');
-					let url="clientControl.php";
+					let url="loginControl.php";
 					//url="loginCheck.py";
 					fetch(url,{
 						method: 'POST',
